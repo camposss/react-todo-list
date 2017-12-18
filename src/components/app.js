@@ -12,6 +12,8 @@ class App extends Component {
             todoData: todo_data
         };
         this.addItem= this.addItem.bind(this);
+        this.deleteItem=this.deleteItem.bind(this);
+        this.toggleComplete= this.toggleComplete.bind(this);
     }
 
     addItem(item){
@@ -19,6 +21,23 @@ class App extends Component {
         this.setState({
             todoData: [item, ...this.state.todoData]
         });
+    }
+    deleteItem(index){
+        const tempData= this.state.todoData.slice();
+
+        tempData.splice(index, 1);
+
+        this.setState({
+            todoData: tempData
+        });
+    }
+    toggleComplete(index){
+      const tempData= this.state.todoData.slice();
+
+      tempData[index].complete = !tempData[index].complete;
+      this.setState({
+          todoData: tempData
+      })
     }
     render(){
         const {todoData}=this.state;
@@ -28,7 +47,7 @@ class App extends Component {
                 <h1 className='center-align'>To Do List</h1>
 
                 <AddItem add ={this.addItem} />
-                <ListContainer list={todoData}/>
+                <ListContainer delete= {this.deleteItem} list={todoData} toggleComplete={this.toggleComplete}/>
             </div>
         )
     }
