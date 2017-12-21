@@ -1,43 +1,49 @@
 import 'materialize-css/dist/css/materialize.min.css'
 import React, {Component} from 'react';
-import todo_data from '../todo_data';
 import ListContainer from "./list_container";
 import AddItem from "./add_item";
+import axios from 'axios';
+
+
+const BASE_URL= 'http://api.reactprototypes.com';
+const API_KEY= '?key=christian1234';
 
 class App extends Component {
     constructor(props){
         super(props);
 
         this.state={
-            todoData: todo_data
+            todoData: []
         };
         this.addItem= this.addItem.bind(this);
         this.deleteItem=this.deleteItem.bind(this);
         this.toggleComplete= this.toggleComplete.bind(this);
     }
 
-    addItem(item){
-        item.complete=false;
-        this.setState({
-            todoData: [item, ...this.state.todoData]
-        });
+    componentDidMount(){
+        this.getData();
     }
-    deleteItem(index){
-        const tempData= this.state.todoData.slice();
-
-        tempData.splice(index, 1);
+    async getData(){
+        const result = await axios.get(`${BASE_URL}/todos/${API_KEY}`);
 
         this.setState({
-            todoData: tempData
+            todoData: result.data.todos
         });
     }
-    toggleComplete(index){
-      const tempData= this.state.todoData.slice();
+    async addItem(item){
+        // item.complete=false;
 
-      tempData[index].complete = !tempData[index].complete;
-      this.setState({
-          todoData: tempData
-      })
+        await axios.post(`${BASE_URL}/todos/${API_KEY}`, item);
+
+        this.getData();
+    }
+    async deleteItem(id){
+          await axios.delete(`${BASE_URL}/todos/${id+ API_KEY}`);
+          this.getData();
+    }
+    async toggleComplete(id){
+        await axios.put(`${BASE_URL}/todos/${id+ API_KEY}`);
+        this.getData();
     }
     render(){
         const {todoData}=this.state;
